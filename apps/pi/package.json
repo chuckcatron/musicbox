@@ -12,8 +12,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@music-box/shared": "*",
-    "onoff": "^6.0.3"
+    "@music-box/shared": "*"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
