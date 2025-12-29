@@ -1,11 +1,42 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
 export const musicKitConfig = {
-  developerToken: process.env.NEXT_PUBLIC_APPLE_MUSIC_DEVELOPER_TOKEN || '',
   appName: 'Music Box',
   appBuild: '1.0.0',
 };
 
+let cachedDeveloperToken: string | null = null;
+
+async function fetchDeveloperToken(): Promise<string> {
+  if (cachedDeveloperToken) {
+    return cachedDeveloperToken;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/apple-music/token`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch developer token: ${response.status}`);
+    }
+    const data = await response.json();
+    cachedDeveloperToken = data.token;
+    return data.token;
+  } catch (error) {
+    console.error('Failed to fetch developer token:', error);
+    throw error;
+  }
+}
+
 export async function configureMusicKit(): Promise<MusicKit.MusicKitInstance | null> {
   if (typeof window === 'undefined') return null;
+
+  // Fetch the developer token from the API
+  let developerToken: string;
+  try {
+    developerToken = await fetchDeveloperToken();
+  } catch (error) {
+    console.error('Cannot configure MusicKit without developer token');
+    return null;
+  }
 
   return new Promise((resolve) => {
     // Load MusicKit JS script if not already loaded
@@ -16,23 +47,24 @@ export async function configureMusicKit(): Promise<MusicKit.MusicKitInstance | n
       script.async = true;
       document.head.appendChild(script);
 
-      script.onload = () => initMusicKit(resolve);
+      script.onload = () => initMusicKit(developerToken, resolve);
       script.onerror = () => {
         console.error('Failed to load MusicKit JS');
         resolve(null);
       };
     } else if (window.MusicKit) {
-      initMusicKit(resolve);
+      initMusicKit(developerToken, resolve);
     } else {
       // Script exists but MusicKit not ready yet
       document.getElementById('musickit-script')!.addEventListener('load', () => {
-        initMusicKit(resolve);
+        initMusicKit(developerToken, resolve);
       });
     }
   });
 }
 
 function initMusicKit(
+  developerToken: string,
   resolve: (value: MusicKit.MusicKitInstance | null) => void
 ) {
   if (!window.MusicKit) {
@@ -42,7 +74,7 @@ function initMusicKit(
   }
 
   window.MusicKit.configure({
-    developerToken: musicKitConfig.developerToken,
+    developerToken,
     app: {
       name: musicKitConfig.appName,
       build: musicKitConfig.appBuild,
