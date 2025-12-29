@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "46e6dfd9dad3929eb268a63c2584407906d66c58757bc1b816bb6db3c3a0b701": {
+      "displayName": "MusicBoxDataStack Template",
+      "source": {
+        "path": "MusicBoxDataStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "194722397974-us-east-1-42ab7f7e": {
+          "bucketName": "cdk-hnb659fds-assets-194722397974-us-east-1",
+          "objectKey": "46e6dfd9dad3929eb268a63c2584407906d66c58757bc1b816bb6db3c3a0b701.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-file-publishing-role-194722397974-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

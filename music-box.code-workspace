@@ -1,0 +1,154 @@
+{
+  "folders": [
+    {
+      "name": "🎵 Root",
+      "path": "."
+    },
+    {
+      "name": "🌐 Web (NextJS)",
+      "path": "apps/web"
+    },
+    {
+      "name": "⚡ API (NestJS)",
+      "path": "apps/api"
+    },
+    {
+      "name": "☁️ Infra (CDK)",
+      "path": "infra"
+    },
+    {
+      "name": "📦 Shared",
+      "path": "packages/shared"
+    },
+    {
+      "name": "🍓 Pi Client",
+      "path": "apps/pi"
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "eslint.workingDirectories": [
+      "apps/web",
+      "apps/api",
+      "apps/pi",
+      "infra",
+      "packages/shared"
+    ],
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.next": true,
+      "**/cdk.out": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.next": true,
+      "**/cdk.out": true
+    },
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "prisma.prisma",
+      "amazonwebservices.aws-toolkit-vscode",
+      "mikestead.dotenv",
+      "orta.vscode-jest",
+      "ms-vscode.vscode-typescript-next"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Web: Dev Server",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder:🌐 Web (NextJS)}",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "API: Debug Local",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder:⚡ API (NestJS)}",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "start:debug"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "CDK: Synth",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder:☁️ Infra (CDK)}",
+        "runtimeExecutable": "npx",
+        "runtimeArgs": ["cdk", "synth"],
+        "console": "integratedTerminal"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Full Stack Dev",
+        "configurations": ["Web: Dev Server", "API: Debug Local"]
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Install All Dependencies",
+        "type": "shell",
+        "command": "npm install",
+        "options": {
+          "cwd": "${workspaceFolder:🎵 Root}"
+        },
+        "group": "build"
+      },
+      {
+        "label": "Build All",
+        "type": "shell",
+        "command": "npm run build",
+        "options": {
+          "cwd": "${workspaceFolder:🎵 Root}"
+        },
+        "group": "build"
+      },
+      {
+        "label": "Deploy All",
+        "type": "shell",
+        "command": "npm run deploy",
+        "options": {
+          "cwd": "${workspaceFolder:🎵 Root}"
+        },
+        "group": "build"
+      },
+      {
+        "label": "CDK Diff",
+        "type": "shell",
+        "command": "npx cdk diff --all",
+        "options": {
+          "cwd": "${workspaceFolder:☁️ Infra (CDK)}"
+        },
+        "group": "build"
+      }
+    ]
+  }
+}

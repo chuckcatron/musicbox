@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "41ea855e2e3c80aa8181f666bb4ac76b2c2a948ab7777e56a4577aa2e04c2c1e": {
+      "displayName": "ApiFunction/Code",
+      "source": {
+        "path": "asset.41ea855e2e3c80aa8181f666bb4ac76b2c2a948ab7777e56a4577aa2e04c2c1e",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "194722397974-us-east-1-ef9e0a04": {
+          "bucketName": "cdk-hnb659fds-assets-194722397974-us-east-1",
+          "objectKey": "41ea855e2e3c80aa8181f666bb4ac76b2c2a948ab7777e56a4577aa2e04c2c1e.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-file-publishing-role-194722397974-us-east-1"
+        }
+      }
+    },
+    "527927b7811cc93e4b4e4f5eea36e03e443d2e0ce4cd486939a6c5eab6aa0e19": {
+      "displayName": "MusicBoxApiStack Template",
+      "source": {
+        "path": "MusicBoxApiStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "194722397974-us-east-1-1b11a1a9": {
+          "bucketName": "cdk-hnb659fds-assets-194722397974-us-east-1",
+          "objectKey": "527927b7811cc93e4b4e4f5eea36e03e443d2e0ce4cd486939a6c5eab6aa0e19.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-file-publishing-role-194722397974-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

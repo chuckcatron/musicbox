@@ -1,0 +1,26 @@
+{
+  "name": "music-box",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "infra"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "deploy": "turbo build && cd infra && cdk deploy --all",
+    "deploy:api": "turbo build --filter=api && cd infra && cdk deploy ApiStack",
+    "deploy:web": "turbo build --filter=web && cd infra && cdk deploy WebStack"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0"
+  },
+  "packageManager": "npm@10.0.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

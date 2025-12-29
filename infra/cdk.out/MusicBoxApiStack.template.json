@@ -1,0 +1,391 @@
+{
+ "Description": "Music Box - NestJS Lambda API",
+ "Resources": {
+  "ApiFunctionServiceRole52B9747B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/ApiFunction/ServiceRole/Resource"
+   }
+  },
+  "ApiFunctionServiceRoleDefaultPolicy20A32B8D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "MusicBoxDataStack:ExportsOutputFnGetAttFavoritesTable4DA8A306Arn72D98149"
+        },
+        {
+         "Fn::ImportValue": "MusicBoxDataStack:ExportsOutputFnGetAttUsersTable9725E9C8Arn5684EF99"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "MusicBoxDataStack:ExportsOutputFnGetAttFavoritesTable4DA8A306Arn72D98149"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiFunctionServiceRoleDefaultPolicy20A32B8D",
+    "Roles": [
+     {
+      "Ref": "ApiFunctionServiceRole52B9747B"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/ApiFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ApiFunctionCE271BD4": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-194722397974-us-east-1",
+     "S3Key": "41ea855e2e3c80aa8181f666bb4ac76b2c2a948ab7777e56a4577aa2e04c2c1e.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "NODE_ENV": "production",
+      "COGNITO_USER_POOL_ID": {
+       "Fn::ImportValue": "MusicBoxAuthStack:ExportsOutputRefMusicBoxUserPoolC432F1998A0DE2D3"
+      },
+      "COGNITO_REGION": "us-east-1",
+      "USERS_TABLE": {
+       "Fn::ImportValue": "MusicBoxDataStack:ExportsOutputRefUsersTable9725E9C857961836"
+      },
+      "FAVORITES_TABLE": {
+       "Fn::ImportValue": "MusicBoxDataStack:ExportsOutputRefFavoritesTable4DA8A306EDA1F1EE"
+      },
+      "API_KEY": "MusicBoxApiStack",
+      "APPLE_MUSIC_TEAM_ID": "",
+      "APPLE_MUSIC_KEY_ID": "",
+      "APPLE_MUSIC_PRIVATE_KEY": ""
+     }
+    },
+    "FunctionName": "music-box-api",
+    "Handler": "dist/main.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "ApiFunctionServiceRole52B9747B",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "ApiFunctionServiceRoleDefaultPolicy20A32B8D",
+    "ApiFunctionServiceRole52B9747B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/ApiFunction/Resource",
+    "aws:asset:path": "asset.41ea855e2e3c80aa8181f666bb4ac76b2c2a948ab7777e56a4577aa2e04c2c1e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "MusicBoxApi8B31C1A1": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "CorsConfiguration": {
+     "AllowHeaders": [
+      "Content-Type",
+      "Authorization",
+      "x-api-key"
+     ],
+     "AllowMethods": [
+      "GET",
+      "POST",
+      "DELETE",
+      "OPTIONS"
+     ],
+     "AllowOrigins": [
+      "*"
+     ],
+     "MaxAge": 3600
+    },
+    "Description": "Music Box API Gateway",
+    "Name": "music-box-api",
+    "ProtocolType": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/MusicBoxApi/Resource"
+   }
+  },
+  "MusicBoxApiDefaultStageEFD850EE": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MusicBoxApi8B31C1A1"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/MusicBoxApi/DefaultStage/Resource"
+   }
+  },
+  "MusicBoxApiANYproxyLambdaIntegrationFDC51450": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MusicBoxApi8B31C1A1"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/MusicBoxApi/ANY--{proxy+}/LambdaIntegration/Resource"
+   }
+  },
+  "MusicBoxApiANYproxyLambdaIntegrationPermissionD8AAA404": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:194722397974:",
+       {
+        "Ref": "MusicBoxApi8B31C1A1"
+       },
+       "/*/*/{proxy+}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/MusicBoxApi/ANY--{proxy+}/LambdaIntegration-Permission"
+   }
+  },
+  "MusicBoxApiANYproxy897F5537": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MusicBoxApi8B31C1A1"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "ANY /{proxy+}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MusicBoxApiANYproxyLambdaIntegrationFDC51450"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/MusicBoxApi/ANY--{proxy+}/Resource"
+   }
+  },
+  "MusicBoxApiGEThealthLambdaIntegrationPermission79B01995": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiFunctionCE271BD4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:194722397974:",
+       {
+        "Ref": "MusicBoxApi8B31C1A1"
+       },
+       "/*/*/health"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/MusicBoxApi/GET--health/LambdaIntegration-Permission"
+   }
+  },
+  "MusicBoxApiGEThealthBA5CB9CC": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MusicBoxApi8B31C1A1"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /health",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "MusicBoxApiANYproxyLambdaIntegrationFDC51450"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/MusicBoxApi/GET--health/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11Oy2rDMBD8ltzlbaP00mNSKOmpwf2AsJG3ZmNbMt5VQjD691oyhdLTPHZ2GAt2Z2G7wbtUrumqni8wfym6zizWee5xuDQI83v0Tjl48/bt//ITTQOLLCoZxgHmOvSUDwVPoWf3KLnCkpHdGUVIBfYZFg2H6DrSAwoZHLlFpTs+bhbmo+q4Hzm/Z8hyWdaW+pVkqw5RV/bhldoJf6f9kyWXkqlJQpwcmTIg97Bvc+Az6hg1GR8agqs83ewzbF/hZXMV5mqKXnkgqFf8AXhbgyM4AQAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ApiEndpoint": {
+   "Description": "API Gateway Endpoint URL",
+   "Value": {
+    "Fn::GetAtt": [
+     "MusicBoxApi8B31C1A1",
+     "ApiEndpoint"
+    ]
+   },
+   "Export": {
+    "Name": "MusicBoxApiEndpoint"
+   }
+  },
+  "ApiKey": {
+   "Description": "API Key for Pi devices",
+   "Value": "MusicBoxApiStack",
+   "Export": {
+    "Name": "MusicBoxApiKey"
+   }
+  },
+  "LambdaFunctionName": {
+   "Description": "Lambda Function Name",
+   "Value": {
+    "Ref": "ApiFunctionCE271BD4"
+   },
+   "Export": {
+    "Name": "MusicBoxLambdaName"
+   }
+  },
+  "ExportsOutputFnGetAttMusicBoxApi8B31C1A1ApiEndpointF31DBE21": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MusicBoxApi8B31C1A1",
+     "ApiEndpoint"
+    ]
+   },
+   "Export": {
+    "Name": "MusicBoxApiStack:ExportsOutputFnGetAttMusicBoxApi8B31C1A1ApiEndpointF31DBE21"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,214 @@
+{
+ "Description": "Music Box - DynamoDB tables for users and favorites",
+ "Resources": {
+  "UsersTable9725E9C8": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "userId",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "music-box-users"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxDataStack/UsersTable/Resource"
+   }
+  },
+  "FavoritesTable4DA8A306": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "songId",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "addedAt",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "userId-addedAt-index",
+      "KeySchema": [
+       {
+        "AttributeName": "userId",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "addedAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "userId",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "songId",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TableName": "music-box-favorites"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxDataStack/FavoritesTable/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXISw5AMBRA0bWYtw9lYmwBkjKX/iRFW+mHiNg7YXRvDgFSESgzdgQs5IJXzeHqIxMLemmUp2XGydcGxleF2sl+cyOqgktefNSluKV4I+ukgjnkOymgbKDO5qA19slGbRTQvw+WNf7RcgAAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxDataStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "UsersTableName": {
+   "Description": "Users DynamoDB Table Name",
+   "Value": {
+    "Ref": "UsersTable9725E9C8"
+   },
+   "Export": {
+    "Name": "MusicBoxUsersTableName"
+   }
+  },
+  "UsersTableArn": {
+   "Description": "Users DynamoDB Table ARN",
+   "Value": {
+    "Fn::GetAtt": [
+     "UsersTable9725E9C8",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "MusicBoxUsersTableArn"
+   }
+  },
+  "FavoritesTableName": {
+   "Description": "Favorites DynamoDB Table Name",
+   "Value": {
+    "Ref": "FavoritesTable4DA8A306"
+   },
+   "Export": {
+    "Name": "MusicBoxFavoritesTableName"
+   }
+  },
+  "FavoritesTableArn": {
+   "Description": "Favorites DynamoDB Table ARN",
+   "Value": {
+    "Fn::GetAtt": [
+     "FavoritesTable4DA8A306",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "MusicBoxFavoritesTableArn"
+   }
+  },
+  "ExportsOutputFnGetAttUsersTable9725E9C8Arn5684EF99": {
+   "Value": {
+    "Fn::GetAtt": [
+     "UsersTable9725E9C8",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "MusicBoxDataStack:ExportsOutputFnGetAttUsersTable9725E9C8Arn5684EF99"
+   }
+  },
+  "ExportsOutputFnGetAttFavoritesTable4DA8A306Arn72D98149": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FavoritesTable4DA8A306",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "MusicBoxDataStack:ExportsOutputFnGetAttFavoritesTable4DA8A306Arn72D98149"
+   }
+  },
+  "ExportsOutputRefUsersTable9725E9C857961836": {
+   "Value": {
+    "Ref": "UsersTable9725E9C8"
+   },
+   "Export": {
+    "Name": "MusicBoxDataStack:ExportsOutputRefUsersTable9725E9C857961836"
+   }
+  },
+  "ExportsOutputRefFavoritesTable4DA8A306EDA1F1EE": {
+   "Value": {
+    "Ref": "FavoritesTable4DA8A306"
+   },
+   "Export": {
+    "Name": "MusicBoxDataStack:ExportsOutputRefFavoritesTable4DA8A306EDA1F1EE"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
