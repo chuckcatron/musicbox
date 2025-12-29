@@ -4,6 +4,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigatewayv2';
 import * as apigatewayIntegrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import type { Construct } from 'constructs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -24,8 +25,18 @@ export class ApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
-    // Generate API key for Pi devices
-    const apiKeyValue = cdk.Names.uniqueId(this).substring(0, 32);
+    // Generate a secure API key using Secrets Manager
+    const apiKeySecret = new secretsmanager.Secret(this, 'ApiKeySecret', {
+      secretName: 'music-box/api-key',
+      description: 'API Key for Music Box Pi devices',
+      generateSecretString: {
+        excludePunctuation: true,
+        includeSpace: false,
+        passwordLength: 32,
+      },
+    });
+
+    const apiKeyValue = apiKeySecret.secretValue.unsafeUnwrap();
 
     // Create Lambda function for NestJS API
     // Note: Run `npm run build` in apps/api before deploying
