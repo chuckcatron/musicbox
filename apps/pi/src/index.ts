@@ -1,8 +1,7 @@
 import { config, validateConfig } from './config.js';
 import { ApiClient } from './api-client.js';
 import { Player } from './player.js';
-import { Button, simulateButtonPress } from './button.js';
-import { Gpio } from 'onoff';
+import { Button, isGpioAvailable } from './button.js';
 
 async function main(): Promise<void> {
   console.log('Music Box Pi Client starting...');
@@ -41,31 +40,29 @@ async function main(): Promise<void> {
   await playButton.initialize(handlePlayPress);
   await stopButton.initialize(handleStopPress);
 
-  // Setup keyboard simulation for development
-  if (!Gpio.accessible) {
+  // Setup keyboard simulation for development (when GPIO not available or no TTY)
+  if (!isGpioAvailable() && process.stdin.isTTY) {
     console.log('\nRunning in simulation mode (no GPIO)');
-    if (process.stdin.isTTY) {
-      process.stdin.setRawMode(true);
-      process.stdin.resume();
-      process.stdin.on('data', (data) => {
-        const key = data.toString().toLowerCase();
-        switch (key) {
-          case 'p':
-            console.log('Simulated play button press');
-            handlePlayPress();
-            break;
-          case 's':
-            console.log('Simulated stop button press');
-            handleStopPress();
-            break;
-          case 'q':
-          case '\u0003': // Ctrl+C
-            cleanup();
-            process.exit(0);
-        }
-      });
-      console.log('Press P to play, S to stop, Q to quit\n');
-    }
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.on('data', (data) => {
+      const key = data.toString().toLowerCase();
+      switch (key) {
+        case 'p':
+          console.log('Simulated play button press');
+          handlePlayPress();
+          break;
+        case 's':
+          console.log('Simulated stop button press');
+          handleStopPress();
+          break;
+        case 'q':
+        case '\u0003': // Ctrl+C
+          cleanup();
+          process.exit(0);
+      }
+    });
+    console.log('Press P to play, S to stop, Q to quit\n');
   }
 
   // Cleanup on exit

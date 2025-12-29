@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@music-box/shared": "*",
-    "onoff": "^6.0.3"
+    "deasync": "^0.1.30",
+    "node-libgpiod": "^1.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
