@@ -27,7 +27,7 @@ export class ApiClient {
       throw new Error(`API Error (${response.status}): ${error}`);
     }
 
-    return response.json();
+    return response.json() as Promise<ApiResponse<T>>;
   }
 
   async getRandomSong(): Promise<PlayResponse> {
