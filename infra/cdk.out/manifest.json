@@ -244,7 +244,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-deploy-role-194722397974-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-cfn-exec-role-194722397974-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/527927b7811cc93e4b4e4f5eea36e03e443d2e0ce4cd486939a6c5eab6aa0e19.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/5785c03061dab3b370b0e4bab4013f1fe88c893863ad597cddc982499c2aca8c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -262,6 +262,12 @@
         "MusicBoxApiStack.assets"
       ],
       "metadata": {
+        "/MusicBoxApiStack/ApiKeySecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiKeySecretF1B08E61"
+          }
+        ],
         "/MusicBoxApiStack/ApiFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

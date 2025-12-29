@@ -16,6 +16,7 @@ export default () => ({
     teamId: process.env.APPLE_MUSIC_TEAM_ID || '',
     keyId: process.env.APPLE_MUSIC_KEY_ID || '',
     privateKey: process.env.APPLE_MUSIC_PRIVATE_KEY || '',
+    secretArn: process.env.APPLE_MUSIC_SECRET_ARN || '',
   },
   apiKey: process.env.API_KEY || '',
   corsOrigin: process.env.CORS_ORIGIN || '*',

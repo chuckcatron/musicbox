@@ -1,6 +1,23 @@
 {
  "Description": "Music Box - NestJS Lambda API",
  "Resources": {
+  "ApiKeySecretF1B08E61": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "API Key for Music Box Pi devices",
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "IncludeSpace": false,
+     "PasswordLength": 32
+    },
+    "Name": "music-box/api-key"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/ApiKeySecret/Resource"
+   }
+  },
   "ApiFunctionServiceRole52B9747B": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -95,7 +112,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-194722397974-us-east-1",
-     "S3Key": "41ea855e2e3c80aa8181f666bb4ac76b2c2a948ab7777e56a4577aa2e04c2c1e.zip"
+     "S3Key": "8fac93f78c40e09b26df4c8e3667f1f8f31376ce3320eee878f414c052cbf57d.zip"
     },
     "Environment": {
      "Variables": {
@@ -110,7 +127,18 @@
       "FAVORITES_TABLE": {
        "Fn::ImportValue": "MusicBoxDataStack:ExportsOutputRefFavoritesTable4DA8A306EDA1F1EE"
       },
-      "API_KEY": "MusicBoxApiStack",
+      "API_KEY": {
+       "Fn::Join": [
+        "",
+        [
+         "{{resolve:secretsmanager:",
+         {
+          "Ref": "ApiKeySecretF1B08E61"
+         },
+         ":SecretString:::}}"
+        ]
+       ]
+      },
       "APPLE_MUSIC_TEAM_ID": "",
       "APPLE_MUSIC_KEY_ID": "",
       "APPLE_MUSIC_PRIVATE_KEY": ""
@@ -134,7 +162,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MusicBoxApiStack/ApiFunction/Resource",
-    "aws:asset:path": "asset.41ea855e2e3c80aa8181f666bb4ac76b2c2a948ab7777e56a4577aa2e04c2c1e",
+    "aws:asset:path": "asset.8fac93f78c40e09b26df4c8e3667f1f8f31376ce3320eee878f414c052cbf57d",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -306,7 +334,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11Oy2rDMBD8ltzlbaP00mNSKOmpwf2AsJG3ZmNbMt5VQjD691oyhdLTPHZ2GAt2Z2G7wbtUrumqni8wfym6zizWee5xuDQI83v0Tjl48/bt//ITTQOLLCoZxgHmOvSUDwVPoWf3KLnCkpHdGUVIBfYZFg2H6DrSAwoZHLlFpTs+bhbmo+q4Hzm/Z8hyWdaW+pVkqw5RV/bhldoJf6f9kyWXkqlJQpwcmTIg97Bvc+Az6hg1GR8agqs83ewzbF/hZXMV5mqKXnkgqFf8AXhbgyM4AQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11PQW7DMAx7S++Otqa77NgOGLrTiuwBhepogZrEDiy5RRHk77MdDBh2IinSEl1Dvathu8G7VLbtq4EvMH8p2t6k0XkWsoFURnTYUUhW0ebt261sMQOOlxZhfo/OKnuXvb/8RGFkkaQWwzjC3PiBslHw5Ae2j5IrbDGyO6NIugn7DEnDIdqe9IBCBifuUOmOj1sN81F12k+cn2fIMnXvyvqV5FHjo67swyl1AX+r/ZMltyymIfExWDKlQN7DrsuBz6hTTF92viW4ytOtfobtK7xsrsJcheiUR4JmxR+mtaNBWgEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "MusicBoxApiStack/CDKMetadata/Default"
@@ -328,7 +356,18 @@
   },
   "ApiKey": {
    "Description": "API Key for Pi devices",
-   "Value": "MusicBoxApiStack",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "{{resolve:secretsmanager:",
+      {
+       "Ref": "ApiKeySecretF1B08E61"
+      },
+      ":SecretString:::}}"
+     ]
+    ]
+   },
    "Export": {
     "Name": "MusicBoxApiKey"
    }

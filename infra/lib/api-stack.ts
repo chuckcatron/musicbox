@@ -38,6 +38,22 @@ export class ApiStack extends cdk.Stack {
 
     const apiKeyValue = apiKeySecret.secretValue.unsafeUnwrap();
 
+    // Create Apple Music credentials secret with the actual values
+    const appleMusicSecret = new secretsmanager.Secret(this, 'AppleMusicSecret', {
+      secretName: 'music-box/apple-music',
+      description: 'Apple Music API credentials',
+      secretStringValue: cdk.SecretValue.unsafePlainText(JSON.stringify({
+        teamId: '4ZYQBHA5X3',
+        keyId: 'JRQQN78Q5T',
+        privateKey: `-----BEGIN PRIVATE KEY-----
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQga2hD49EcF9B0khji
+NaFTP+7ONtSujWPCPGtQigswmU+gCgYIKoZIzj0DAQehRANCAAQ70pO9yLkkF1Ip
+Rk6OMMSo4SxFTQsK//02T+kDer0LsqmpWtVnp4iXjcI3WOZgwCOVOKXFpGE4Z5IQ
+dXK60KM+
+-----END PRIVATE KEY-----`
+      })),
+    });
+
     // Create Lambda function for NestJS API
     // Note: Run `npm run build` in apps/api before deploying
     const apiFunction = new lambda.Function(this, 'ApiFunction', {
@@ -56,12 +72,13 @@ export class ApiStack extends cdk.Stack {
         USERS_TABLE: props.usersTable.tableName,
         FAVORITES_TABLE: props.favoritesTable.tableName,
         API_KEY: apiKeyValue,
-        // Apple Music credentials should be set via SSM or Secrets Manager
-        APPLE_MUSIC_TEAM_ID: process.env.APPLE_MUSIC_TEAM_ID || '',
-        APPLE_MUSIC_KEY_ID: process.env.APPLE_MUSIC_KEY_ID || '',
-        APPLE_MUSIC_PRIVATE_KEY: process.env.APPLE_MUSIC_PRIVATE_KEY || '',
+        // Reference the secret ARN so Lambda can fetch it at runtime
+        APPLE_MUSIC_SECRET_ARN: appleMusicSecret.secretArn,
       },
     });
+
+    // Grant Lambda permission to read the Apple Music secret
+    appleMusicSecret.grantRead(apiFunction);
 
     // Grant DynamoDB permissions
     props.usersTable.grantReadWriteData(apiFunction);

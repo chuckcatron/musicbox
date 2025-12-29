@@ -1,24 +1,69 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import jwt from 'jsonwebtoken';
 import { APPLE_MUSIC } from '@music-box/shared';
 import type { AppleMusicSongResponse, AppleMusicAttributes } from './apple-music.types.js';
 
+interface AppleMusicCredentials {
+  teamId: string;
+  keyId: string;
+  privateKey: string;
+}
+
 @Injectable()
-export class AppleMusicService {
+export class AppleMusicService implements OnModuleInit {
   private developerToken: string | null = null;
   private tokenExpiry: number = 0;
+  private credentials: AppleMusicCredentials | null = null;
+  private secretsClient: SecretsManagerClient;
 
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {
+    this.secretsClient = new SecretsManagerClient({
+      region: this.configService.get<string>('aws.region') || 'us-east-1',
+    });
+  }
 
-  private generateDeveloperToken(): string {
+  async onModuleInit(): Promise<void> {
+    await this.loadCredentials();
+  }
+
+  private async loadCredentials(): Promise<void> {
+    // First try to get from Secrets Manager (production)
+    const secretArn = this.configService.get<string>('appleMusic.secretArn');
+
+    if (secretArn) {
+      try {
+        const command = new GetSecretValueCommand({ SecretId: secretArn });
+        const response = await this.secretsClient.send(command);
+
+        if (response.SecretString) {
+          this.credentials = JSON.parse(response.SecretString);
+          console.log('Loaded Apple Music credentials from Secrets Manager');
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to load credentials from Secrets Manager:', error);
+      }
+    }
+
+    // Fall back to environment variables (local development)
     const teamId = this.configService.get<string>('appleMusic.teamId');
     const keyId = this.configService.get<string>('appleMusic.keyId');
     const privateKey = this.configService.get<string>('appleMusic.privateKey');
 
-    if (!teamId || !keyId || !privateKey) {
-      throw new Error('Apple Music credentials not configured');
+    if (teamId && keyId && privateKey) {
+      this.credentials = { teamId, keyId, privateKey };
+      console.log('Loaded Apple Music credentials from environment');
     }
+  }
+
+  private generateDeveloperToken(): string {
+    if (!this.credentials) {
+      throw new Error('Apple Music credentials not loaded');
+    }
+
+    const { teamId, keyId, privateKey } = this.credentials;
 
     // Token valid for 6 months (max allowed)
     const expiresIn = 15777000;
