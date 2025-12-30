@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-deploy-role-194722397974-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-cfn-exec-role-194722397974-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/d0d2f0f8ea2f11d5eaf8b3288d49368857d0bcdf15859206160e935ec1c20edf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/4bdb16120f0b1b23740601d88b856383d3c4affa12f27d03f4446e527e8e41ea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -114,7 +114,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-deploy-role-194722397974-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-cfn-exec-role-194722397974-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/46e6dfd9dad3929eb268a63c2584407906d66c58757bc1b816bb6db3c3a0b701.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/6e43bb5358f786a74aca22a1422aaa9375a84aeb220bac9e3cd82582fa29bfe1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -244,7 +244,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-deploy-role-194722397974-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-cfn-exec-role-194722397974-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/5785c03061dab3b370b0e4bab4013f1fe88c893863ad597cddc982499c2aca8c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/c77b9f63906465a121dfdf3297a93573d0cbcdeb8c14eab333f1bf4ee58e14b2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -266,6 +266,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiKeySecretF1B08E61"
+          }
+        ],
+        "/MusicBoxApiStack/AppleMusicSecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppleMusicSecret79DBF531"
           }
         ],
         "/MusicBoxApiStack/ApiFunction/ServiceRole/Resource": [
@@ -334,10 +340,16 @@
             "data": "ApiEndpoint"
           }
         ],
-        "/MusicBoxApiStack/ApiKey": [
+        "/MusicBoxApiStack/ApiKeySecretArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApiKey"
+            "data": "ApiKeySecretArn"
+          }
+        ],
+        "/MusicBoxApiStack/AppleMusicSecretArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppleMusicSecretArn"
           }
         ],
         "/MusicBoxApiStack/LambdaFunctionName": [
@@ -390,7 +402,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-deploy-role-194722397974-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-cfn-exec-role-194722397974-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/e740d5b536b5e3769f63af73dcc294a349a15b4e874c4d4d6ef9b8c9525ca4ab.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-194722397974-us-east-1/35df0f45fb7efe0b7fceb09cdff44f693c11a1f39c2a5230d29db4c81bbb7601.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -801,14 +813,6 @@
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
-          },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "recommendedValue": true,
             "explanation": "When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration"
@@ -944,6 +948,10 @@
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }

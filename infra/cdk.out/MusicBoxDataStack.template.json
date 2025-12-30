@@ -88,7 +88,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXISw5AMBRA0bWYtw9lYmwBkjKX/iRFW+mHiNg7YXRvDgFSESgzdgQs5IJXzeHqIxMLemmUp2XGydcGxleF2sl+cyOqgktefNSluKV4I+ukgjnkOymgbKDO5qA19slGbRTQvw+WNf7RcgAAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXISwqAIBRA0bU011cptIEWEFTzeH4C+2j0tIho70GN7uEKEFJCkeFJXJuZL07B3UXUM8OTBnN5XINRcPeoFsvq0X94WGsppF1/q0lxS/FhPhgLE+WHEFBWUGQTOcf35KNbLbR/Xy97YMJyAAAA"
    },
    "Metadata": {
     "aws:cdk:path": "MusicBoxDataStack/CDKMetadata/Default"

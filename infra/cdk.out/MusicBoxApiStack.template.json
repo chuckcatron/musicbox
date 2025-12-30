@@ -18,6 +18,19 @@
     "aws:cdk:path": "MusicBoxApiStack/ApiKeySecret/Resource"
    }
   },
+  "AppleMusicSecret79DBF531": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Apple Music API credentials - populate via AWS CLI after deployment",
+    "GenerateSecretString": {},
+    "Name": "music-box/apple-music"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "MusicBoxApiStack/AppleMusicSecret/Resource"
+   }
+  },
   "ApiFunctionServiceRole52B9747B": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -57,6 +70,21 @@
    "Properties": {
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Ref": "ApiKeySecretF1B08E61"
+        },
+        {
+         "Ref": "AppleMusicSecret79DBF531"
+        }
+       ]
+      },
       {
        "Action": [
         "dynamodb:BatchGetItem",
@@ -112,7 +140,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-194722397974-us-east-1",
-     "S3Key": "8fac93f78c40e09b26df4c8e3667f1f8f31376ce3320eee878f414c052cbf57d.zip"
+     "S3Key": "1d56fbb0a9d87900a147322df9e52fb859380e69ab3c7bf01ff1bd83efcfd93e.zip"
     },
     "Environment": {
      "Variables": {
@@ -127,21 +155,12 @@
       "FAVORITES_TABLE": {
        "Fn::ImportValue": "MusicBoxDataStack:ExportsOutputRefFavoritesTable4DA8A306EDA1F1EE"
       },
-      "API_KEY": {
-       "Fn::Join": [
-        "",
-        [
-         "{{resolve:secretsmanager:",
-         {
-          "Ref": "ApiKeySecretF1B08E61"
-         },
-         ":SecretString:::}}"
-        ]
-       ]
+      "API_KEY_SECRET_ARN": {
+       "Ref": "ApiKeySecretF1B08E61"
       },
-      "APPLE_MUSIC_TEAM_ID": "",
-      "APPLE_MUSIC_KEY_ID": "",
-      "APPLE_MUSIC_PRIVATE_KEY": ""
+      "APPLE_MUSIC_SECRET_ARN": {
+       "Ref": "AppleMusicSecret79DBF531"
+      }
      }
     },
     "FunctionName": "music-box-api",
@@ -162,7 +181,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MusicBoxApiStack/ApiFunction/Resource",
-    "aws:asset:path": "asset.8fac93f78c40e09b26df4c8e3667f1f8f31376ce3320eee878f414c052cbf57d",
+    "aws:asset:path": "asset.1d56fbb0a9d87900a147322df9e52fb859380e69ab3c7bf01ff1bd83efcfd93e",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -334,7 +353,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11PQW7DMAx7S++Otqa77NgOGLrTiuwBhepogZrEDiy5RRHk77MdDBh2IinSEl1Dvathu8G7VLbtq4EvMH8p2t6k0XkWsoFURnTYUUhW0ebt261sMQOOlxZhfo/OKnuXvb/8RGFkkaQWwzjC3PiBslHw5Ae2j5IrbDGyO6NIugn7DEnDIdqe9IBCBifuUOmOj1sN81F12k+cn2fIMnXvyvqV5FHjo67swyl1AX+r/ZMltyymIfExWDKlQN7DrsuBz6hTTF92viW4ytOtfobtK7xsrsJcheiUR4JmxR+mtaNBWgEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12O0WrDMAxFv6XvjtYlsPd2MNanleQDiupoQW1ih0huKMb/PuwwGHu650pXF9VQNw3sd7hKZft7NfIVYqdo7wZXuUQhu5DKhA4HWiB2xZv3b7dRMiNO1x4hfgRnlb3Lu798pmViEfYuGcYJYutHyouiZz+yfZZcoWSkuaAIqcAhi5EGjsHeSY8oZHDmAZVWfD5qiJ+q82HmfJ4l205xKPUb5FHrg250ckrDgr+v/bMll5JpSXxYLJnyQO5hN+TAV9A5aDLO9wQ3eXnUNby+wX53E+ZqCU55Img3/QHhgTYlWgEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "MusicBoxApiStack/CDKMetadata/Default"
@@ -354,22 +373,22 @@
     "Name": "MusicBoxApiEndpoint"
    }
   },
-  "ApiKey": {
-   "Description": "API Key for Pi devices",
+  "ApiKeySecretArn": {
+   "Description": "Secrets Manager ARN for API Key - fetch with: aws secretsmanager get-secret-value --secret-id <arn>",
    "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "{{resolve:secretsmanager:",
-      {
-       "Ref": "ApiKeySecretF1B08E61"
-      },
-      ":SecretString:::}}"
-     ]
-    ]
+    "Ref": "ApiKeySecretF1B08E61"
    },
    "Export": {
-    "Name": "MusicBoxApiKey"
+    "Name": "MusicBoxApiKeySecretArn"
+   }
+  },
+  "AppleMusicSecretArn": {
+   "Description": "Secrets Manager ARN for Apple Music credentials",
+   "Value": {
+    "Ref": "AppleMusicSecret79DBF531"
+   },
+   "Export": {
+    "Name": "MusicBoxAppleMusicSecretArn"
    }
   },
   "LambdaFunctionName": {

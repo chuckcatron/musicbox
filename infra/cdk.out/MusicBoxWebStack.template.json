@@ -291,7 +291,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21PSw6CQAw9i/thVHDjUnCvwQMYGAqp4NRMOxhDuLuDmKiJq/fpa18a6ziJ9XpR3DkyVRt1WOrhJIVpVbDOAyd6SL1pQVRW2zeb4UgdmsfHnvWoTEe+qh1ZCZeSg8MG7c4YYM6C56ibVv7Ze2RxWHpBslPmW4+jyjwLXXNg8s7AFPjwn9HRUY8VuLRgUDtmkPBQaGtexV5uXkZlqQJ94WUfr/R6qzeLCyNGzlvBK+h8xidc0W3zHgEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21NzQqCQBB+lu7rVArdy+6JPkBs6ySTthM7s0aI7x5mUEGn758vhTTLYLWwd0lc3SYdnWCo1LrW2LscB8lg2EXXopr87N9shoI7co+PPevRuI5jfQ7sFYYqOwRqyG+dQ5GcvQbupsk/e0+igU5Rif3U+dbjaPIoytcShWNwOBU+/CcqAvdUY9hZQbMVQa3UNuSb13HUW9TReK4RLrLs0xTWG1gtLkKUhOiVrgjljE8ICmQdHgEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "MusicBoxWebStack/CDKMetadata/Default"

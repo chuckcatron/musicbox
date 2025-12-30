@@ -16,16 +16,16 @@
         }
       }
     },
-    "e740d5b536b5e3769f63af73dcc294a349a15b4e874c4d4d6ef9b8c9525ca4ab": {
+    "35df0f45fb7efe0b7fceb09cdff44f693c11a1f39c2a5230d29db4c81bbb7601": {
       "displayName": "MusicBoxWebStack Template",
       "source": {
         "path": "MusicBoxWebStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "194722397974-us-east-1-0956f3e2": {
+        "194722397974-us-east-1-15630242": {
           "bucketName": "cdk-hnb659fds-assets-194722397974-us-east-1",
-          "objectKey": "e740d5b536b5e3769f63af73dcc294a349a15b4e874c4d4d6ef9b8c9525ca4ab.json",
+          "objectKey": "35df0f45fb7efe0b7fceb09cdff44f693c11a1f39c2a5230d29db4c81bbb7601.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-file-publishing-role-194722397974-us-east-1"
         }

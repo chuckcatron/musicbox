@@ -8,16 +8,55 @@ import { AppModule } from './app.module.js';
 
 let cachedServer: Handler;
 
+// Configure CORS based on environment
+function getCorsConfig() {
+  const corsOrigin = process.env.CORS_ORIGIN;
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  if (isProduction && !corsOrigin) {
+    console.warn('CORS_ORIGIN not set in production - CORS will be restrictive');
+  }
+
+  // In production, require explicit CORS origins
+  // In development, allow localhost
+  const allowedOrigins = corsOrigin
+    ? corsOrigin.split(',').map((o) => o.trim())
+    : isProduction
+      ? [] // No origins allowed if not configured in production
+      : ['http://localhost:3000', 'http://localhost:3001'];
+
+  return {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      // Only in non-production or for specific paths like health checks
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn(`CORS blocked origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
+  };
+}
+
 async function bootstrap(): Promise<Handler> {
   const expressApp = express();
   const adapter = new ExpressAdapter(expressApp);
 
   const app = await NestFactory.create(AppModule, adapter);
 
-  app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
-    credentials: true,
-  });
+  app.enableCors(getCorsConfig());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -48,10 +87,7 @@ if (process.env.NODE_ENV !== 'production') {
   (async () => {
     const app = await NestFactory.create(AppModule);
 
-    app.enableCors({
-      origin: process.env.CORS_ORIGIN || '*',
-      credentials: true,
-    });
+    app.enableCors(getCorsConfig());
 
     app.useGlobalPipes(
       new ValidationPipe({

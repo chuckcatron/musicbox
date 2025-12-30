@@ -16,15 +16,15 @@ export class AppleMusicService implements OnModuleInit {
   private developerToken: string | null = null;
   private tokenExpiry: number = 0;
   private credentials: AppleMusicCredentials | null = null;
-  private secretsClient: SecretsManagerClient;
+  private secretsClient: SecretsManagerClient | null = null;
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService) {}
+
+  async onModuleInit(): Promise<void> {
+    // Initialize SecretsManager client here to ensure ConfigService is ready
     this.secretsClient = new SecretsManagerClient({
       region: this.configService.get<string>('aws.region') || 'us-east-1',
     });
-  }
-
-  async onModuleInit(): Promise<void> {
     await this.loadCredentials();
   }
 
@@ -32,7 +32,7 @@ export class AppleMusicService implements OnModuleInit {
     // First try to get from Secrets Manager (production)
     const secretArn = this.configService.get<string>('appleMusic.secretArn');
 
-    if (secretArn) {
+    if (secretArn && this.secretsClient) {
       try {
         const command = new GetSecretValueCommand({ SecretId: secretArn });
         const response = await this.secretsClient.send(command);

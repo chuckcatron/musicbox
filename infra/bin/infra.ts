@@ -25,6 +25,13 @@ const dataStack = new DataStack(app, 'MusicBoxDataStack', {
   description: 'Music Box - DynamoDB tables for users and favorites',
 });
 
+// CORS origins for web app - add your production domain here
+const corsOrigins = [
+  'http://localhost:3000', // Local development
+  // Add production domain when deployed, e.g.:
+  // 'https://music-box.example.com',
+];
+
 // API stack - Lambda + API Gateway
 const apiStack = new ApiStack(app, 'MusicBoxApiStack', {
   env,
@@ -32,6 +39,7 @@ const apiStack = new ApiStack(app, 'MusicBoxApiStack', {
   userPool: authStack.userPool,
   usersTable: dataStack.usersTable,
   favoritesTable: dataStack.favoritesTable,
+  corsOrigins,
 });
 apiStack.addDependency(authStack);
 apiStack.addDependency(dataStack);

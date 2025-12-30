@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -10,6 +11,8 @@ import type { PlayResponse } from '@music-box/shared';
 
 @Injectable()
 export class PlayService {
+  private readonly logger = new Logger(PlayService.name);
+
   constructor(
     private readonly favoritesService: FavoritesService,
     private readonly appleMusicService: AppleMusicService,
@@ -34,18 +37,23 @@ export class PlayService {
   }
 
   async getRandomSongStreamUrl(userId: string): Promise<PlayResponse> {
+    this.logger.log(`Getting random song stream for user: ${userId}`);
+
     const favorite = await this.favoritesService.getRandomFavorite(userId);
 
     if (!favorite) {
+      this.logger.warn(`No favorites found for user: ${userId}`);
       throw new NotFoundException('No favorites found for this user');
     }
 
+    this.logger.debug(`Selected song: ${favorite.name} by ${favorite.artist}`);
     const musicUserToken = await this.getUserMusicToken(userId);
     const streamUrl = await this.appleMusicService.getSongStreamUrl(
       favorite.songId,
       musicUserToken,
     );
 
+    this.logger.log(`Successfully retrieved stream URL for: ${favorite.name}`);
     return {
       songId: favorite.songId,
       name: favorite.name,
@@ -57,9 +65,12 @@ export class PlayService {
   }
 
   async getSongStreamUrl(userId: string, songId: string): Promise<PlayResponse> {
+    this.logger.log(`Getting stream for song: ${songId}, user: ${userId}`);
+
     const favorite = await this.favoritesService.getFavorite(userId, songId);
 
     if (!favorite) {
+      this.logger.warn(`Song not found in favorites: ${songId}`);
       throw new NotFoundException('Song not found in favorites');
     }
 
@@ -69,6 +80,7 @@ export class PlayService {
       musicUserToken,
     );
 
+    this.logger.log(`Successfully retrieved stream URL for: ${favorite.name}`);
     return {
       songId: favorite.songId,
       name: favorite.name,

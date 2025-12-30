@@ -1,31 +1,31 @@
 {
   "version": "48.0.0",
   "files": {
-    "8fac93f78c40e09b26df4c8e3667f1f8f31376ce3320eee878f414c052cbf57d": {
+    "1d56fbb0a9d87900a147322df9e52fb859380e69ab3c7bf01ff1bd83efcfd93e": {
       "displayName": "ApiFunction/Code",
       "source": {
-        "path": "asset.8fac93f78c40e09b26df4c8e3667f1f8f31376ce3320eee878f414c052cbf57d",
+        "path": "asset.1d56fbb0a9d87900a147322df9e52fb859380e69ab3c7bf01ff1bd83efcfd93e",
         "packaging": "zip"
       },
       "destinations": {
-        "194722397974-us-east-1-6cb9922a": {
+        "194722397974-us-east-1-51437181": {
           "bucketName": "cdk-hnb659fds-assets-194722397974-us-east-1",
-          "objectKey": "8fac93f78c40e09b26df4c8e3667f1f8f31376ce3320eee878f414c052cbf57d.zip",
+          "objectKey": "1d56fbb0a9d87900a147322df9e52fb859380e69ab3c7bf01ff1bd83efcfd93e.zip",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-file-publishing-role-194722397974-us-east-1"
         }
       }
     },
-    "5785c03061dab3b370b0e4bab4013f1fe88c893863ad597cddc982499c2aca8c": {
+    "c77b9f63906465a121dfdf3297a93573d0cbcdeb8c14eab333f1bf4ee58e14b2": {
       "displayName": "MusicBoxApiStack Template",
       "source": {
         "path": "MusicBoxApiStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "194722397974-us-east-1-ad870a67": {
+        "194722397974-us-east-1-b88c0a45": {
           "bucketName": "cdk-hnb659fds-assets-194722397974-us-east-1",
-          "objectKey": "5785c03061dab3b370b0e4bab4013f1fe88c893863ad597cddc982499c2aca8c.json",
+          "objectKey": "c77b9f63906465a121dfdf3297a93573d0cbcdeb8c14eab333f1bf4ee58e14b2.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-file-publishing-role-194722397974-us-east-1"
         }

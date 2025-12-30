@@ -16,11 +16,12 @@ interface ApiStackProps extends cdk.StackProps {
   userPool: cognito.UserPool;
   usersTable: dynamodb.Table;
   favoritesTable: dynamodb.Table;
+  corsOrigins?: string[]; // Allowed CORS origins for web app
 }
 
 export class ApiStack extends cdk.Stack {
   public readonly apiUrl: string;
-  public readonly apiKey: string;
+  public readonly apiKeySecretArn: string;
 
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
@@ -36,33 +37,29 @@ export class ApiStack extends cdk.Stack {
       },
     });
 
-    const apiKeyValue = apiKeySecret.secretValue.unsafeUnwrap();
+    // Reference the secret ARN instead of exposing the value
+    const apiKeySecretArn = apiKeySecret.secretArn;
 
-    // Create Apple Music credentials secret with the actual values
+    // Create Apple Music credentials secret as a placeholder
+    // The actual credentials must be populated manually via AWS CLI or Console:
+    // aws secretsmanager put-secret-value --secret-id music-box/apple-music \
+    //   --secret-string '{"teamId":"YOUR_TEAM_ID","keyId":"YOUR_KEY_ID","privateKey":"YOUR_PRIVATE_KEY"}'
     const appleMusicSecret = new secretsmanager.Secret(this, 'AppleMusicSecret', {
       secretName: 'music-box/apple-music',
-      description: 'Apple Music API credentials',
-      secretStringValue: cdk.SecretValue.unsafePlainText(JSON.stringify({
-        teamId: '4ZYQBHA5X3',
-        keyId: 'JRQQN78Q5T',
-        privateKey: `-----BEGIN PRIVATE KEY-----
-MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQga2hD49EcF9B0khji
-NaFTP+7ONtSujWPCPGtQigswmU+gCgYIKoZIzj0DAQehRANCAAQ70pO9yLkkF1Ip
-Rk6OMMSo4SxFTQsK//02T+kDer0LsqmpWtVnp4iXjcI3WOZgwCOVOKXFpGE4Z5IQ
-dXK60KM+
------END PRIVATE KEY-----`
-      })),
+      description: 'Apple Music API credentials - populate via AWS CLI after deployment',
     });
 
+    // CORS origins - default to allowing localhost for development
+    const corsOrigins = props.corsOrigins || ['http://localhost:3000'];
+    const corsOriginsString = corsOrigins.join(',');
+
     // Create Lambda function for NestJS API
-    // Note: Run `npm run build` in apps/api before deploying
+    // Use the lambda-bundle directory created by the build:lambda script
     const apiFunction = new lambda.Function(this, 'ApiFunction', {
       functionName: 'music-box-api',
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'dist/main.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../apps/api'), {
-        exclude: ['src', '*.ts', 'tsconfig*.json', 'nest-cli.json', '.env*'],
-      }),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../apps/api/lambda-bundle')),
       timeout: cdk.Duration.seconds(30),
       memorySize: 512,
       environment: {
@@ -71,13 +68,14 @@ dXK60KM+
         COGNITO_REGION: this.region,
         USERS_TABLE: props.usersTable.tableName,
         FAVORITES_TABLE: props.favoritesTable.tableName,
-        API_KEY: apiKeyValue,
-        // Reference the secret ARN so Lambda can fetch it at runtime
+        API_KEY_SECRET_ARN: apiKeySecretArn,
         APPLE_MUSIC_SECRET_ARN: appleMusicSecret.secretArn,
+        CORS_ORIGIN: corsOriginsString,
       },
     });
 
-    // Grant Lambda permission to read the Apple Music secret
+    // Grant Lambda permission to read secrets
+    apiKeySecret.grantRead(apiFunction);
     appleMusicSecret.grantRead(apiFunction);
 
     // Grant DynamoDB permissions
@@ -89,7 +87,7 @@ dXK60KM+
       apiName: 'music-box-api',
       description: 'Music Box API Gateway',
       corsPreflight: {
-        allowOrigins: ['*'],
+        allowOrigins: corsOrigins,
         allowMethods: [
           apigateway.CorsHttpMethod.GET,
           apigateway.CorsHttpMethod.POST,
@@ -97,6 +95,7 @@ dXK60KM+
           apigateway.CorsHttpMethod.OPTIONS,
         ],
         allowHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
+        allowCredentials: true,
         maxAge: cdk.Duration.hours(1),
       },
     });
@@ -122,7 +121,7 @@ dXK60KM+
     });
 
     this.apiUrl = httpApi.apiEndpoint;
-    this.apiKey = apiKeyValue;
+    this.apiKeySecretArn = apiKeySecretArn;
 
     // Outputs
     new cdk.CfnOutput(this, 'ApiEndpoint', {
@@ -131,10 +130,16 @@ dXK60KM+
       exportName: 'MusicBoxApiEndpoint',
     });
 
-    new cdk.CfnOutput(this, 'ApiKey', {
-      value: this.apiKey,
-      description: 'API Key for Pi devices',
-      exportName: 'MusicBoxApiKey',
+    new cdk.CfnOutput(this, 'ApiKeySecretArn', {
+      value: apiKeySecretArn,
+      description: 'Secrets Manager ARN for API Key - fetch with: aws secretsmanager get-secret-value --secret-id <arn>',
+      exportName: 'MusicBoxApiKeySecretArn',
+    });
+
+    new cdk.CfnOutput(this, 'AppleMusicSecretArn', {
+      value: appleMusicSecret.secretArn,
+      description: 'Secrets Manager ARN for Apple Music credentials',
+      exportName: 'MusicBoxAppleMusicSecretArn',
     });
 
     new cdk.CfnOutput(this, 'LambdaFunctionName', {

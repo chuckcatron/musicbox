@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "d0d2f0f8ea2f11d5eaf8b3288d49368857d0bcdf15859206160e935ec1c20edf": {
+    "4bdb16120f0b1b23740601d88b856383d3c4affa12f27d03f4446e527e8e41ea": {
       "displayName": "MusicBoxAuthStack Template",
       "source": {
         "path": "MusicBoxAuthStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "194722397974-us-east-1-673873ce": {
+        "194722397974-us-east-1-65b6c74b": {
           "bucketName": "cdk-hnb659fds-assets-194722397974-us-east-1",
-          "objectKey": "d0d2f0f8ea2f11d5eaf8b3288d49368857d0bcdf15859206160e935ec1c20edf.json",
+          "objectKey": "4bdb16120f0b1b23740601d88b856383d3c4affa12f27d03f4446e527e8e41ea.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::194722397974:role/cdk-hnb659fds-file-publishing-role-194722397974-us-east-1"
         }

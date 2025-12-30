@@ -12,10 +12,11 @@ import {
 import { FavoritesService } from './favorites.service.js';
 import { CognitoJwtGuard } from '../auth/guards/cognito-jwt.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { CreateFavoriteDto } from './dto/create-favorite.dto.js';
+import { SongIdParam } from '../common/dto/song-id.param.js';
 import type {
   ApiResponse,
   CognitoUser,
-  CreateFavoriteDto,
   FavoritesResponse,
 } from '@music-box/shared';
 
@@ -52,9 +53,9 @@ export class FavoritesController {
   @HttpCode(HttpStatus.OK)
   async removeFavorite(
     @CurrentUser() user: CognitoUser,
-    @Param('songId') songId: string,
+    @Param() params: SongIdParam,
   ): Promise<ApiResponse> {
-    await this.favoritesService.removeFavorite(user.sub, songId);
+    await this.favoritesService.removeFavorite(user.sub, params.songId);
     return {
       success: true,
       message: 'Favorite removed successfully',

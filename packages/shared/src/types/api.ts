@@ -14,8 +14,16 @@ export interface PlayResponse {
   durationMs?: number;
 }
 
+export interface DependencyHealth {
+  name: string;
+  status: 'healthy' | 'unhealthy';
+  latencyMs?: number;
+  error?: string;
+}
+
 export interface HealthResponse {
-  status: 'ok' | 'error';
+  status: 'ok' | 'degraded' | 'error';
   timestamp: string;
   version: string;
+  dependencies?: DependencyHealth[];
 }

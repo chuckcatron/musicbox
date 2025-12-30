@@ -18,6 +18,8 @@ export default () => ({
     privateKey: process.env.APPLE_MUSIC_PRIVATE_KEY || '',
     secretArn: process.env.APPLE_MUSIC_SECRET_ARN || '',
   },
+  // API key can be set directly (local dev) or via Secrets Manager ARN (production)
   apiKey: process.env.API_KEY || '',
-  corsOrigin: process.env.CORS_ORIGIN || '*',
+  apiKeySecretArn: process.env.API_KEY_SECRET_ARN || '',
+  corsOrigin: process.env.CORS_ORIGIN || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000'),
 });

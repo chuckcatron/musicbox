@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DynamoDBService } from '../dynamodb/dynamodb.service.js';
 import type {
   Favorite,
@@ -8,9 +8,13 @@ import type {
 
 @Injectable()
 export class FavoritesService {
+  private readonly logger = new Logger(FavoritesService.name);
+
   constructor(private readonly dynamoDBService: DynamoDBService) {}
 
   async getFavorites(userId: string): Promise<FavoritesResponse> {
+    this.logger.debug(`Fetching favorites for user: ${userId}`);
+
     const result = await this.dynamoDBService.query({
       TableName: this.dynamoDBService.favoritesTable,
       KeyConditionExpression: 'userId = :userId',
@@ -20,6 +24,7 @@ export class FavoritesService {
     });
 
     const favorites = (result.Items as Favorite[]) || [];
+    this.logger.debug(`Found ${favorites.length} favorites for user: ${userId}`);
 
     return {
       favorites,
@@ -31,6 +36,8 @@ export class FavoritesService {
     userId: string,
     dto: CreateFavoriteDto,
   ): Promise<Favorite> {
+    this.logger.log(`Adding favorite for user: ${userId}, song: ${dto.songId}`);
+
     const now = new Date().toISOString();
 
     const favorite: Favorite = {
@@ -50,10 +57,13 @@ export class FavoritesService {
       Item: favorite,
     });
 
+    this.logger.log(`Successfully added favorite: ${dto.name} by ${dto.artist}`);
     return favorite;
   }
 
   async removeFavorite(userId: string, songId: string): Promise<void> {
+    this.logger.log(`Removing favorite for user: ${userId}, song: ${songId}`);
+
     await this.dynamoDBService.delete({
       TableName: this.dynamoDBService.favoritesTable,
       Key: {
@@ -61,17 +71,40 @@ export class FavoritesService {
         songId,
       },
     });
+
+    this.logger.log(`Successfully removed favorite: ${songId}`);
   }
 
   async getRandomFavorite(userId: string): Promise<Favorite | null> {
-    const { favorites } = await this.getFavorites(userId);
+    this.logger.debug(`Getting random favorite for user: ${userId}`);
 
-    if (favorites.length === 0) {
+    // First, get just the songIds to minimize data transfer
+    const countResult = await this.dynamoDBService.query({
+      TableName: this.dynamoDBService.favoritesTable,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId,
+      },
+      ProjectionExpression: 'songId',
+      Select: 'SPECIFIC_ATTRIBUTES',
+    });
+
+    const songIds = countResult.Items?.map((item) => item.songId as string) || [];
+
+    if (songIds.length === 0) {
+      this.logger.debug(`No favorites found for user: ${userId}`);
       return null;
     }
 
-    const randomIndex = Math.floor(Math.random() * favorites.length);
-    return favorites[randomIndex];
+    // Select a random songId and fetch the full record
+    const randomIndex = Math.floor(Math.random() * songIds.length);
+    const selectedSongId = songIds[randomIndex];
+
+    const selected = await this.getFavorite(userId, selectedSongId);
+    if (selected) {
+      this.logger.debug(`Selected random favorite: ${selected.name} by ${selected.artist}`);
+    }
+    return selected;
   }
 
   async getFavorite(userId: string, songId: string): Promise<Favorite | null> {
